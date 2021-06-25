@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using ZsGUtils.Enums;
 
@@ -7,7 +8,7 @@ namespace ZsGUtils.FilesystemUtils
     /// <summary>
     /// Keeps all the JSON serializer methods
     /// </summary>
-    public static class JsonSerializer
+    public class JsonSerializer : Serializer
     {
         public static bool Serialize<T>(string saveDir, string fileName, ref T serializable, DoBackup doBackup)
         {
@@ -20,16 +21,14 @@ namespace ZsGUtils.FilesystemUtils
             CreateDirIfDoesntExist(saveDir);
             CreateBackupIfNeeded(path, doBackup);
 
-            TextWriter writer = null;
             try
             {
-                string output = JsonConvert.SerializeObject(serializable);
-                writer = new StreamWriter(path, false);
-                writer.Write(output);
+                string jsonString = JsonConvert.SerializeObject(serializable);
+                File.WriteAllText(path, jsonString);
             }
-            finally
+            catch (Exception e)
             {
-                if (writer != null) writer.Close();
+                throw new SerializationException("Error during serialization", e);
             }
 
             return true;
@@ -42,56 +41,23 @@ namespace ZsGUtils.FilesystemUtils
                 return default;
             }
 
-            TextReader reader = null;
+            T obj;
             try
             {
-                reader = new StreamReader(path);
-                string fileContents = reader.ReadToEnd();
-
+                string serializedString = File.ReadAllText(path);
                 JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
                 {
                     MissingMemberHandling = missingMemberHandling
                 };
 
-                return JsonConvert.DeserializeObject<T>(fileContents, jsonSerializerSettings);
+                obj = JsonConvert.DeserializeObject<T>(serializedString, jsonSerializerSettings);
             }
-            finally
+            catch (Exception e)
             {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
-
-        private static string CreateSavePath(string dirName, string fileName)
-        {
-            return Path.Combine(dirName, fileName);
-        }
-
-        private static void CreateDirIfDoesntExist(string dirName)
-        {
-            if (string.IsNullOrWhiteSpace(dirName))
-            {
-                return;
+                throw new SerializationException("Error during deserialization", e);
             }
 
-            if (!Directory.Exists(dirName))
-            {
-                Directory.CreateDirectory(dirName);
-            }
-        }
-
-        private static void CreateBackupIfNeeded(string path, DoBackup doBackup)
-        {
-            if (DoBackup.Yes == doBackup && File.Exists(path))
-            {
-                string backupPath = path + ".bak";
-                if (File.Exists(backupPath))
-                {
-                    File.Delete(backupPath);
-                }
-
-                File.Copy(path, backupPath);
-            }
+            return obj;
         }
     }
 }
