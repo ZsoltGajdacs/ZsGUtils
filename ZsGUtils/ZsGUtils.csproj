@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.9.3</Version>
+    <Version>0.9.3.1</Version>
     <Authors>ZsGWorks</Authors>
     <Company />
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/ZsoltGajdacs/ZsGUtils</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZsoltGajdacs/ZsGUtils</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageReleaseNotes>Downgrade to .net standard 2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>BindableClass fix</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Small utilities for my own projects</Description>
     <SignAssembly>true</SignAssembly>

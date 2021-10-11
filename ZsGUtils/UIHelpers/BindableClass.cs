@@ -14,7 +14,7 @@ namespace ZsGUtils.UIHelpers
         protected void SetAndNotifyPropertyChanged<T>(ref T varToUpdate, T newValue, 
             [CallerMemberName] String propertyName = "")
         {
-            if (varToUpdate.Equals(newValue))
+            if (!varToUpdate.Equals(newValue))
             {
                 varToUpdate = newValue;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
